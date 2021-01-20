@@ -1,25 +1,32 @@
 import arcade
 import random
 import os
+import math
 
-import arcade
 
-SPRITE_SCALING = 0.4
-TILE_SCALING = 0.5
+SPRITE_SCALING = 0.3
+TILE_SCALING = 0.9
 
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Rexburg racing"
 
 
-MOVEMENT_SPEED = 30
-GRAVITY = .001
+MOVEMENT_SPEED = 5
+GRAVITY = 0
+ANGLE_SPEED = 3
 
 
 
 
 class Car(arcade.Sprite):
     """ Player Class """
+
+    def __init__(self, image, scale):
+
+        super().__init__(image, scale)
+        # Create a variable to hold our speed. 'angle' is created by the parent
+        self.speed = 0
 
     def update(self):
         """ Move the player """
@@ -39,6 +46,13 @@ class Car(arcade.Sprite):
 
         elif self.top > SCREEN_HEIGHT - 1:
             self.top = SCREEN_HEIGHT - 1
+
+        angle_rad = math.radians(self.angle)
+
+        self.angle += self.change_angle
+
+        self.center_x += -self.speed * math.sin(angle_rad)
+        self.center_y += -self.speed * math.cos(angle_rad)
 
 
 class MyGame(arcade.Window):
@@ -159,13 +173,14 @@ class MyGame(arcade.Window):
 
         # If the player presses a key, update the speed
         if key == arcade.key.UP:
-            self.player_sprite.change_y = MOVEMENT_SPEED
+            self.player_sprite.speed = -MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
-            self.player_sprite.change_y = -MOVEMENT_SPEED
+            self.player_sprite.speed = MOVEMENT_SPEED
+
         elif key == arcade.key.LEFT:
-            self.player_sprite.change_x = -MOVEMENT_SPEED
+            self.player_sprite.change_angle = ANGLE_SPEED
         elif key == arcade.key.RIGHT:
-            self.player_sprite.change_x = MOVEMENT_SPEED
+            self.player_sprite.change_angle = -ANGLE_SPEED
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -175,9 +190,9 @@ class MyGame(arcade.Window):
         # Use 'better move by keyboard' example if you need to
         # handle this.
         if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.change_y = 0
+            self.player_sprite.speed = 0
         elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_x = 0
+            self.player_sprite.change_angle = 0
 
 
 def main():
