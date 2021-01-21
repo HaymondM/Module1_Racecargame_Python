@@ -5,9 +5,13 @@ import math
 
 
 SPRITE_SCALING = 0.3
+<<<<<<< HEAD
+TILE_SCALING = 0.4
+=======
 TILE_SCALING = 0.9
+>>>>>>> a65a398de5655fee61703f40af91063980fd3304
 
-SCREEN_WIDTH = 1000
+SCREEN_WIDTH = 750
 SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Rexburg racing"
 
@@ -72,6 +76,7 @@ class MyGame(arcade.Window):
         self.tree_list = None
         self.player_list = None
         self.road_list = None
+        self.house_list = None
 
         self.physics_engine = None
 
@@ -81,6 +86,8 @@ class MyGame(arcade.Window):
         # Set up the player info
         self.player_sprite = None
 
+        self.total_time = 0.0
+
         # Set the background color
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
 
@@ -89,12 +96,14 @@ class MyGame(arcade.Window):
     def setup(self):
         """ Set up the game and initialize the variables. """
 
+
         
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
         self.tree_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
         self.road_list = arcade.SpriteList()
+        self.house_list = arcade.SpriteList()
 
         # Set up the player
         self.player_sprite = Car("car1.png", SPRITE_SCALING)
@@ -107,18 +116,20 @@ class MyGame(arcade.Window):
         # Name of map file to load
         map_name = "background.tmx"
         # Name of the layer in the file that has our platforms/walls
-        platforms_layer_name = 'Tree_plat'
+        tree_name = 'Tree_plat'
         # Name of the layer that has items for pick-up
         coins_layer_name = 'Coins_plat'
 
         road_layer_name = 'Road_plat'
 
+        house_layer_name = 'House_plat'
+
         # Read in the tiled map
         my_map = arcade.tilemap.read_tmx(map_name)
 
         # -- Platforms
-        self.tree_list = arcade.tilemap.process_layer(map_object=my_map,
-                                                      layer_name=platforms_layer_name,
+        self.tree_list = arcade.tilemap.process_layer(my_map,
+                                                      layer_name=tree_name,
                                                       scaling=TILE_SCALING,
                                                       use_spatial_hash=True)
 
@@ -127,6 +138,10 @@ class MyGame(arcade.Window):
 
         # --- Other stuff
         self.road_list = arcade.tilemap.process_layer(my_map,road_layer_name, TILE_SCALING )
+
+        self.house_list = arcade.tilemap.process_layer(my_map,house_layer_name, TILE_SCALING )
+
+
         # Set the background color
         if my_map.background_color:
             arcade.set_background_color(my_map.background_color)
@@ -135,6 +150,8 @@ class MyGame(arcade.Window):
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
                                                              self.tree_list,
                                                              GRAVITY)
+        
+        
 
 
 
@@ -145,6 +162,17 @@ class MyGame(arcade.Window):
         Render the screen.
         """
 
+         #timer set up
+
+        minutes = int(self.total_time) // 60
+
+        seconds = int(self.total_time) % 60
+
+        output = f"Time:  {minutes: 02d}:{seconds:02d}"
+
+
+        arcade.draw_text(output, 700, 750, arcade.color.BLACK, 5)
+
         # This command has to happen before we start drawing
         arcade.start_render()
 
@@ -152,6 +180,7 @@ class MyGame(arcade.Window):
         self.road_list.draw()
         self.tree_list.draw()
         self.coin_list.draw()
+        self.house_list.draw()
         self.player_list.draw()
 
         
@@ -166,16 +195,24 @@ class MyGame(arcade.Window):
                                                              self.coin_list)
         for coin in coin_hit_list:
             # Remove the coin
-            coin.remove_from_sprite_lists()                                                     
+            coin.remove_from_sprite_lists()   
+
+        self.total_time += delta_time                                                  
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
         # If the player presses a key, update the speed
         if key == arcade.key.UP:
+<<<<<<< HEAD
+            self.player_sprite.change_y  = MOVEMENT_SPEED
+        elif key == arcade.key.DOWN:
+            self.player_sprite.change_y = -MOVEMENT_SPEED
+=======
             self.player_sprite.speed = -MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
             self.player_sprite.speed = MOVEMENT_SPEED
+>>>>>>> a65a398de5655fee61703f40af91063980fd3304
 
         elif key == arcade.key.LEFT:
             self.player_sprite.change_angle = ANGLE_SPEED
