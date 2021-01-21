@@ -5,11 +5,10 @@ import math
 
 
 SPRITE_SCALING = 0.3
-<<<<<<< HEAD
 TILE_SCALING = 0.4
-=======
+
 TILE_SCALING = 0.9
->>>>>>> a65a398de5655fee61703f40af91063980fd3304
+
 
 SCREEN_WIDTH = 750
 SCREEN_HEIGHT = 800
@@ -204,15 +203,14 @@ class MyGame(arcade.Window):
 
         # If the player presses a key, update the speed
         if key == arcade.key.UP:
-<<<<<<< HEAD
+
             self.player_sprite.change_y  = MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
             self.player_sprite.change_y = -MOVEMENT_SPEED
-=======
+
             self.player_sprite.speed = -MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
             self.player_sprite.speed = MOVEMENT_SPEED
->>>>>>> a65a398de5655fee61703f40af91063980fd3304
 
         elif key == arcade.key.LEFT:
             self.player_sprite.change_angle = ANGLE_SPEED
