@@ -2,12 +2,13 @@ import arcade
 import random
 import os
 import math
+import time 
 
 
-SPRITE_SCALING = 0.3
+SPRITE_SCALING = 0.2
+
 TILE_SCALING = 0.4
 
-TILE_SCALING = 0.9
 
 
 SCREEN_WIDTH = 750
@@ -15,7 +16,7 @@ SCREEN_HEIGHT = 800
 SCREEN_TITLE = "Rexburg racing"
 
 
-MOVEMENT_SPEED = 5
+MOVEMENT_SPEED = 3
 GRAVITY = 0
 ANGLE_SPEED = 3
 
@@ -85,10 +86,14 @@ class MyGame(arcade.Window):
         # Set up the player info
         self.player_sprite = None
 
-        self.total_time = 0.0
+        self.total_time = 90.0
+        self.total_coins = 0
 
         # Set the background color
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
+
+        #Sound
+        self.collect_coin_sound = arcade.load_sound("coin_sound.wav")
 
 
 
@@ -169,8 +174,16 @@ class MyGame(arcade.Window):
 
         output = f"Time:  {minutes: 02d}:{seconds:02d}"
 
+        output2 = f"Total coins: {self.total_coins} "
 
-        arcade.draw_text(output, 700, 750, arcade.color.BLACK, 5)
+        won_text = "You got all the coins!"
+
+        game_over = "Game Over"
+
+        total_score = f" Score: {self.total_coins}"
+
+
+        
 
         # This command has to happen before we start drawing
         arcade.start_render()
@@ -181,6 +194,23 @@ class MyGame(arcade.Window):
         self.coin_list.draw()
         self.house_list.draw()
         self.player_list.draw()
+
+        arcade.draw_text(output, 625, 750, arcade.color.BLACK, 18)
+        arcade.draw_text(output2, 610, 725, arcade.color.BLACK, 18)
+
+        if self.total_time < 0 :
+            arcade.draw_text(game_over, 75, 600, arcade.color.RED, 80) 
+            arcade.draw_text(total_score, 75, 520, arcade.color.RED, 80) 
+        if self.total_coins == 19:
+                arcade.draw_text(won_text, 75, 520, arcade.color.RED, 40)
+                arcade.draw_text(won_text, 75, 520, arcade.color.GLITTER, 41)
+
+
+
+                
+            
+            
+
 
         
 
@@ -194,28 +224,35 @@ class MyGame(arcade.Window):
                                                              self.coin_list)
         for coin in coin_hit_list:
             # Remove the coin
-            coin.remove_from_sprite_lists()   
+            coin.remove_from_sprite_lists() 
+            self.total_coins +=1  
 
-        self.total_time += delta_time                                                  
+            arcade.play_sound(self.collect_coin_sound)
+
+        if self.total_time < 0:
+            arcade.set_background_color(arcade.color.BLACK) 
+        else:
+            self.total_time -= delta_time
+
+        if self.total_coins == 19:
+            arcade.set_background_color(arcade.color.BLACK)
+        else:
+            self.total_time -= delta_time
+
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
 
         # If the player presses a key, update the speed
         if key == arcade.key.UP:
-
             self.player_sprite.change_y  = MOVEMENT_SPEED
         elif key == arcade.key.DOWN:
             self.player_sprite.change_y = -MOVEMENT_SPEED
 
-            self.player_sprite.speed = -MOVEMENT_SPEED
-        elif key == arcade.key.DOWN:
-            self.player_sprite.speed = MOVEMENT_SPEED
-
         elif key == arcade.key.LEFT:
-            self.player_sprite.change_angle = ANGLE_SPEED
+            self.player_sprite.change_x = -MOVEMENT_SPEED
         elif key == arcade.key.RIGHT:
-            self.player_sprite.change_angle = -ANGLE_SPEED
+            self.player_sprite.change_x = MOVEMENT_SPEED
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -225,9 +262,9 @@ class MyGame(arcade.Window):
         # Use 'better move by keyboard' example if you need to
         # handle this.
         if key == arcade.key.UP or key == arcade.key.DOWN:
-            self.player_sprite.speed = 0
+            self.player_sprite.change_y = 0
         elif key == arcade.key.LEFT or key == arcade.key.RIGHT:
-            self.player_sprite.change_angle = 0
+            self.player_sprite.change_x = 0
 
 
 def main():
